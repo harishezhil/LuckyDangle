@@ -1,0 +1,46 @@
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#rope {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#charm {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 64px;
+  line-height: 1;
+  transform-origin: 50% 0;
+  transform: translate(-50%, 0);
+  user-select: none;
+  pointer-events: none;
+}
+
+
+/* The lucky cat's raised arm swings out and back, like a beckoning paw */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-9deg); }
+}
+
+/* Spidey sense: the yellow marks pulse outward from his head */
+@keyframes tingle {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(1.1); }
+}
