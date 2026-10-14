@@ -15,24 +15,13 @@ Grab them, fling them, ring them, and watch them swing back.
 
 ---
 
-## ✨ What it is
+## What it is
 
 Lucky Dangle is a tiny Mac app with no Dock icon. It lives in your menu bar, and a charm hangs from the top
 edge of your screen on a string. The charm is a real hanging weight: it swings, stretches the string, bounces
 back, and settles. Click it, drag it, or just brush your cursor past it.
 
 The window ignores the mouse everywhere except over the charm, so it never gets in the way of the apps behind it.
-
-## 🎮 How to play
-
-| Do this | Get this |
-| --- | --- |
-| **Drag** the charm | Pull it around. Let go and your motion carries on into the string |
-| **Brush** the cursor across it | A gentle push in the direction you moved |
-| **Click** the charm | Its reaction starts straight away (see the table below) |
-| **Shake** the bell | It rings, harder for faster shakes |
-| **Menu bar eye icon** | Show or hide the charm, pick a charm, or quit |
-| **Number keys** `1`–`8` | Switch charms (click the charm once first so the window has keyboard focus) |
 
 ## 🪬 The charms
 
@@ -47,7 +36,7 @@ The window ignores the mouse everywhere except over the charm, so it never gets 
 | 7 | **Spider-Man (cartoon)** | Hangs upside down on a pale twisted web cord | Twisted cord |
 | 8 | **Spidey (chibi)** | His spidey-sense marks pulse, and he hangs from a long, curly, hand-inked web | Inked web |
 
-## 🧠 How it works
+## How it works
 
 - **One weight on an elastic cord.** Gravity pulls the charm down, the cord only pulls back when it's
   stretched (it goes limp when slack), and air drag slowly settles it. Each frame runs eight small physics
@@ -59,7 +48,7 @@ The window ignores the mouse everywhere except over the charm, so it never gets 
 - **No audio files.** The bell is built from the overtones of a struck bell using the Web Audio API.
 - **Sharp on Retina.** The string canvas is drawn at your screen's full pixel density.
 
-## 🚀 Run it from source
+## Run it from source
 
 You need a Mac and [Node.js](https://nodejs.org/) 20 or newer.
 
@@ -68,7 +57,7 @@ npm install
 npm start
 ```
 
-## 📦 Build the Mac app
+## Build the Mac app
 
 This makes a normal `LuckyDangle.app` you can open by double-clicking, with no terminal needed afterwards.
 
@@ -87,23 +76,6 @@ Quit any running copy (menu bar icon → **Quit Lucky Dangle**) before replacing
 
 > **Tip:** if the menu bar is crowded, macOS can hide the eye icon. Hold **Command** and drag other icons off
 > the bar to make room.
-
-## 🗂 Project layout
-
-```
-luckydangle/
-├── main.js          Electron main process: the window, the menu bar icon, click-through
-├── preload.js       A safe bridge between the page and Electron
-├── package.json
-├── build/           Menu bar icon and app icon (tray.png, icon.icns)
-├── docs/            The preview picture used in this README
-└── src/
-    ├── index.html
-    ├── styles.css
-    ├── charms.js    The list of charms. Add yours here
-    ├── physics.js   Cord physics, string styles, reactions and the bell sound
-    └── charms/      The charm pictures (transparent PNGs)
-```
 
 ## ➕ Add your own charm
 
@@ -128,7 +100,7 @@ Optional extras on a charm:
 
 The feel of the swing (gravity, bounce, drag) is a short list of numbers at the top of `src/physics.js`.
 
-## 📝 Notes
+## Notes
 
 - Built and tested on a Mac with an Apple Silicon chip. Electron is pinned to version 33 and the packager to
   version 18, which work with Node 20.
