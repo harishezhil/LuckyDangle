@@ -33,6 +33,11 @@ function createWindow() {
     },
   });
 
+  // Show on every desktop, including over full-screen apps and full-screen browser tabs.
+  // The order matters: "all workspaces" first, then the window level.
+  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  win.setAlwaysOnTop(true, "screen-saver");
+
   // Start click-through; the page turns clicks on only while the mouse is over the charm
   win.setIgnoreMouseEvents(true, { forward: true });
   win.loadFile(path.join(__dirname, "src", "index.html"));

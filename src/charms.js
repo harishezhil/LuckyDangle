@@ -4,7 +4,7 @@
 // "react" (optional) is what happens when you click or drag the charm: "bell", "blink" or "glow".
 // "rope" and "ropeLength" (optional) set the string style and how long it hangs (px).
 const CHARMS = [
-  { name: "Evil eye", src: "charms/eye.png", height: 150 },
+  { name: "Evil eye", src: "charms/eye.png", height: 130 },
   {
     name: "Hamsa",
     src: "charms/hamsa.png",
