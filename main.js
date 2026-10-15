@@ -6,7 +6,10 @@ const WINDOW_HEIGHT = 900;
 const MARGIN_RIGHT = 0;
 
 // Must be in the same order as the list in src/charms.js
-const CHARM_NAMES = ["Evil eye", "Hamsa", "Chili and lemon", "Oni mask", "Lucky cat", "Bell", "Spider-Man (cartoon)", "Spidey (chibi)"];
+const CHARM_NAMES = [
+  "Evil eye", "Hamsa", "Chili and lemon", "Oni mask", "Lucky cat", "Bell",
+  "Spidey (chibi)", "Spidey (blue)", "Miles",
+];
 
 let win = null;
 let tray = null;

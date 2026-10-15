@@ -17,6 +17,8 @@ const ANCHOR_RIGHT = 90;         // distance of the string from the right edge o
 // Set automatically from the current charm
 let ropeLength = DEFAULT_ROPE_LENGTH;
 let ropeStyle = "gold";
+let ropeWidth = 2;               // thickness of the "ink" string style (px)
+let ropeScale = 1;               // size of the "web" string (1 = drawn for a 240px charm)
 let charmWidth = 120;
 let charmHeight = 200;
 let charmMidY = 100;
@@ -109,6 +111,8 @@ function setCharm(index) {
   // The string style and length change right away; a longer string lets the charm drop down
   ropeLength = c.ropeLength || DEFAULT_ROPE_LENGTH;
   ropeStyle = c.rope || "gold";
+  ropeWidth = c.ropeWidth || 2;
+  ropeScale = c.ropeScale || 1;
   resetEffects();
 
   const layers = c.layers || [];
@@ -117,6 +121,10 @@ function setCharm(index) {
   Promise.all(jobs)
     .then(([body, ...extras]) => {
       if (currentCharm !== index) return; // a newer choice arrived while this loaded
+
+      // ropeStub = how wide (in the picture's own pixels) the picture's string is where it meets ours.
+      // This keeps the two exactly the same thickness whatever height you give the charm.
+      if (c.ropeStub) ropeWidth = (c.ropeStub * c.height) / body.naturalHeight;
 
       const wrap = document.createElement("div");
       wrap.style.position = "relative";
@@ -155,6 +163,7 @@ function setCharm(index) {
     })
     .catch((err) => console.error(err));
 }
+
 setCharm(0);
 
 // Switch from the menu bar menu
@@ -248,9 +257,9 @@ function ringBell(strength = 1) {
 
 // ---- Reactions: what a charm does when you click it, drag it, or let go ----
 // A charm picks one in charms.js with  react: "bell" | "blink" | "glow"
-const BLINK_CLOSE = 90;        // ms to close the eye
-const BLINK_HOLD = 70;         // ms it stays shut
-const BLINK_OPEN = 140;        // ms to open again
+const BLINK_CLOSE = 90;    // ms to close the eye
+const BLINK_HOLD = 70;     // ms it stays shut
+const BLINK_OPEN = 140;    // ms to open again
 const GLOW_AFTER_TAP = 1100;   // ms the glow lasts after a quick click
 const GLOW_AFTER_DRAG = 900;   // ms the glow lasts after you let go of a drag
 
@@ -570,6 +579,11 @@ function drawToonRope(r) {
   trace(front, 1.7, "#f7f8fc");                                      // white strand
 }
 
+// Sticker-style Spider-Men: a plain black ink line, as thick as the line in the picture (ropeWidth)
+function drawInkRope(r) {
+  strokeRope(r, ropeWidth, "#0f0e10");
+}
+
 // Chibi Spider-Man: a pale knotted silk thread with dark ink edges, big sweeping curls and tiny curly wisps
 const WEB_INK = "#1c2340";
 const WEB_CURLS = [
@@ -579,24 +593,27 @@ const WEB_CURLS = [
 ];
 
 function drawWebRope(r) {
+  const z = ropeScale;                       // everything below shrinks or grows with the charm
+  const line = (w) => Math.max(0.6, w * z);  // never thinner than a hairline
+
   // the thread: ink edge, pale silk, bright highlight
-  strokeRope(r, 5.2, WEB_INK);
-  strokeRope(r, 3.7, "#eef3fb");
-  strokeRope(r, 1.0, "#ffffff", 0.7);
+  strokeRope(r, 5.2 * z, WEB_INK);
+  strokeRope(r, 3.7 * z, "#eef3fb");
+  strokeRope(r, line(1.0), "#ffffff", 0.7 * z);
 
   // big sweeping curls that loop around the thread, in clusters that come and go
   ctx.strokeStyle = WEB_INK;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   for (const st of WEB_CURLS) {
-    ctx.lineWidth = st.width;
+    ctx.lineWidth = line(st.width);
     ctx.beginPath();
     for (let i = 0; i <= r.N; i++) {
       const s = r.S[i];
       const cluster = 0.45 + 0.55 * Math.sin(s * st.wob + st.off);
-      const ends = Math.min(1, s / 30, (r.total - s) / 30);
-      const amp = st.amp * Math.max(0.15, cluster) * ends;
-      const th = 2 * Math.PI * st.freq * s + st.phase;
+      const ends = Math.min(1, s / (30 * z), (r.total - s) / (30 * z));
+      const amp = st.amp * z * Math.max(0.15, cluster) * ends;
+      const th = 2 * Math.PI * (st.freq / z) * s + st.phase;
       const nx = -r.T[i].y;
       const ny = r.T[i].x;
       const x = r.P[i].x + nx * amp * Math.sin(th) + r.T[i].x * amp * Math.cos(th);
@@ -608,32 +625,32 @@ function drawWebRope(r) {
   }
 
   // knots: little clusters of pale silk beads along the thread
-  for (let k = 0, s = 26; s < r.total - 18; k++, s += 38 + 9 * Math.sin(k * 2.1)) {
+  for (let k = 0, s = 26 * z; s < r.total - 18 * z; k++, s += (38 + 9 * Math.sin(k * 2.1)) * z) {
     for (let j = 0; j < 3; j++) {
-      const p = ropePoint(r, s + j * 3.4, 0, (j - 1) * 0.9);
+      const p = ropePoint(r, s + j * 3.4 * z, 0, (j - 1) * 0.9 * z);
       ctx.beginPath();
-      ctx.ellipse(p.x, p.y, 3.3 - j * 0.4, 2.1, Math.atan2(p.ty, p.tx) + 0.5 * (j - 1), 0, Math.PI * 2);
+      ctx.ellipse(p.x, p.y, (3.3 - j * 0.4) * z, 2.1 * z, Math.atan2(p.ty, p.tx) + 0.5 * (j - 1), 0, Math.PI * 2);
       ctx.fillStyle = "#f2f6fd";
       ctx.fill();
-      ctx.lineWidth = 0.8;
+      ctx.lineWidth = line(0.8);
       ctx.stroke();
     }
   }
 
   // curly tendrils: a wisp that leaves the thread, swings out, and ends in a tiny spiral
   const tendrils = [{ at: 0.2, side: 1 }, { at: 0.47, side: -1 }, { at: 0.74, side: 1 }];
-  ctx.lineWidth = 0.9;
+  ctx.lineWidth = line(0.9);
   for (const td of tendrils) {
     const s = r.total * td.at;
     const a = ropePoint(r, s, 0, 0);
-    const c = ropePoint(r, s, 14, td.side * 5);
-    const e = ropePoint(r, s, 20, td.side * 17);
+    const c = ropePoint(r, s, 14 * z, td.side * 5 * z);
+    const e = ropePoint(r, s, 20 * z, td.side * 17 * z);
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
     ctx.quadraticCurveTo(c.x, c.y, e.x, e.y);
-    const cc = ropePoint(r, s, 20 + 0, td.side * 20.5); // centre of the little curl
+    const cc = ropePoint(r, s, 20 * z, td.side * 20.5 * z); // centre of the little curl
     const a0 = Math.atan2(e.y - cc.y, e.x - cc.x);
-    ctx.arc(cc.x, cc.y, 3.4, a0, a0 + td.side * Math.PI * 1.6, td.side < 0);
+    ctx.arc(cc.x, cc.y, 3.4 * z, a0, a0 + td.side * Math.PI * 1.6, td.side < 0);
     ctx.stroke();
   }
 }
@@ -645,6 +662,7 @@ function drawRope() {
   else if (ropeStyle === "comic") drawComicRope(r);
   else if (ropeStyle === "toon") drawToonRope(r);
   else if (ropeStyle === "web") drawWebRope(r);
+  else if (ropeStyle === "ink") drawInkRope(r);
   else drawGoldRope();
 }
 
